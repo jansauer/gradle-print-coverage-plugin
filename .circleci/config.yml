@@ -1,0 +1,50 @@
+# CircleCI 2.0 configuration file
+version: 2
+jobs:
+
+  build:
+    docker:
+    - image: circleci/openjdk:8-jdk
+    steps:
+    - checkout
+    - restore_cache:
+        key: gradle-{{ checksum "build.gradle" }}
+    - run: ./gradlew clean build
+    - save_cache:
+        paths:
+        - ~/.gradle
+        key: gradle-{{ checksum "build.gradle" }}
+    - persist_to_workspace:
+        root: ./
+        paths:
+        - build
+    - store_artifacts:
+        path: build/libs
+        destination: ./
+
+  deploy:
+    docker:
+    - image: circleci/openjdk:8-jdk
+    steps:
+    - checkout
+    - restore_cache:
+        key: gradle-{{ checksum "build.gradle" }}
+    - attach_workspace:
+        at: ./
+    - run: ./gradlew publishPlugins
+    - save_cache:
+        paths:
+        - ~/.gradle
+        key: gradle-{{ checksum "build.gradle" }}
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+    - build
+    - deploy:
+        requires:
+          - build
+        filters:
+          branches:
+            only: tags

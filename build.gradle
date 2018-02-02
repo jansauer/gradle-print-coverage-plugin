@@ -1,0 +1,37 @@
+plugins {
+  id 'groovy'
+  id 'java-gradle-plugin'
+  id 'com.palantir.git-version' version '0.10.1' // https://plugins.gradle.org/plugin/com.palantir.git-version
+  id 'com.gradle.plugin-publish' version '0.9.9' // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+}
+
+description = 'Variable Rate Sowing'
+group = 'de.jansauer.printcoverage'
+version = gitVersion()
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+    exclude(module: 'groovy-all')
+  }
+}
+
+//pluginBundle {
+//    website = 'http://www.gradle.org/'
+//    vcsUrl = 'https://github.com/gradle/gradle'
+//    description = 'Greetings from here!'
+//    tags = ['greetings', 'salutations']
+//
+//    plugins {
+//        greetingsPlugin {
+//            id = 'org.samples.greeting'
+//            displayName = 'Gradle Greeting plugin'
+//        }
+//    }
+//}
