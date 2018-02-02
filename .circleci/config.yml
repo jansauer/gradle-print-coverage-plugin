@@ -31,6 +31,7 @@ jobs:
         key: gradle-{{ checksum "build.gradle" }}
     - attach_workspace:
         at: ./
+    - run: echo -e $GRADLE_LOGIN > ~/.gradle/gradle.properties
     - run: ./gradlew publishPlugins
     - save_cache:
         paths:
@@ -41,10 +42,15 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-    - build
+    - build:
+        filters:
+          tags:
+            only: /^\d+\.\d+\.\d+$/
     - deploy:
         requires:
           - build
         filters:
           branches:
-            only: tags
+            ignore: /.*/
+          tags:
+            only: /^\d+\.\d+\.\d+$/

@@ -22,16 +22,16 @@ dependencies {
   }
 }
 
-//pluginBundle {
-//    website = 'http://www.gradle.org/'
-//    vcsUrl = 'https://github.com/gradle/gradle'
-//    description = 'Greetings from here!'
-//    tags = ['greetings', 'salutations']
-//
-//    plugins {
-//        greetingsPlugin {
-//            id = 'org.samples.greeting'
-//            displayName = 'Gradle Greeting plugin'
-//        }
-//    }
-//}
+pluginBundle {
+  website = 'https://github.com/jansauer/gradle-print-coverage-plugin'
+  vcsUrl = 'https://github.com/jansauer/gradle-print-coverage-plugin'
+  description = 'Gradle print coverage plugin.'
+  tags = ['coverage', 'jacoco', 'gitlab']
+
+  plugins {
+    greetingsPlugin {
+      id = 'de.jansauer.printcoverage'
+      displayName = 'Gradle print coverage plugin'
+    }
+  }
+}
