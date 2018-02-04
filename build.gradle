@@ -5,7 +5,7 @@ plugins {
   id 'com.gradle.plugin-publish' version '0.9.9' // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
 }
 
-description = 'Variable Rate Sowing'
+description = 'Gradle print coverage plugin'
 group = 'de.jansauer.printcoverage'
 version = gitVersion()
 
