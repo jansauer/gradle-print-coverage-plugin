@@ -38,6 +38,7 @@ class PrintCoveragePluginTest extends Specification {
 
     when:
     def result = GradleRunner.create()
+        .withGradleVersion(gradleVersion)
         .withProjectDir(testProjectDir.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
@@ -46,6 +47,9 @@ class PrintCoveragePluginTest extends Specification {
     then:
     result.output.contains('Coverage: 3.13%')
     result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << ['4.5', '4.6', '4.7']
   }
 
   def "should print from a example class with tests"() {
@@ -79,6 +83,7 @@ class PrintCoveragePluginTest extends Specification {
 
     when:
     def result = GradleRunner.create()
+        .withGradleVersion(gradleVersion)
         .withProjectDir(testProjectDir.root)
         .withArguments('build', 'printCoverage')
         .withPluginClasspath()
@@ -87,6 +92,9 @@ class PrintCoveragePluginTest extends Specification {
     then:
     result.output.contains('Coverage: 100.0%')
     result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << ['4.5', '4.6', '4.7']
   }
 
   def "should fail if jacoco test report is missing"() {
@@ -99,6 +107,7 @@ class PrintCoveragePluginTest extends Specification {
 
     when:
     def result = GradleRunner.create()
+        .withGradleVersion(gradleVersion)
         .withProjectDir(testProjectDir.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
@@ -107,6 +116,9 @@ class PrintCoveragePluginTest extends Specification {
     then:
     result.output.contains('Jacoco test report is missing.')
     result.task(':printCoverage').outcome == FAILED
+
+    where:
+    gradleVersion << ['4.5', '4.6', '4.7']
   }
 
   def "should print the configured coverage type"() {
