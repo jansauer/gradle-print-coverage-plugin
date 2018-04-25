@@ -22,9 +22,31 @@ Extend your ci job configuration.
 build-gradle:
   stage: build
   script:
-    - ./gradlew build
+    - ./gradlew build printCoverage
   coverage: '/^Coverage:\s(\d+\.\d+%)/'
 ```
+
+## Tasks
+
+* `printCoverage` The one that prints the coverage ;-) 
+
+## Configuration
+
+```
+printcoverage {
+  coverageType = 'INSTRUCTION'
+}
+```
+
+* `coverageType`: Type of [coverage metric](http://www.eclemma.org/jacoco/trunk/doc/counters.html) to be printed.<br>
+  One of 'INSTRUCTION', 'BRANCH', 'LINE', 'COMPLEXITY', 'METHOD' or 'CLASS'<br>
+  Default: 'INSTRUCTION'
+
+## Publishing Workflow
+
+Every commit on this repository gets tested via [circleci](https://circleci.com/gh/jansauer/gradle-print-coverage-plugin).
+Commits that are tagged with a semantic version are also automatically 
+published to the gradle plugin directory as a new version.
 
 ## Contributing
 
