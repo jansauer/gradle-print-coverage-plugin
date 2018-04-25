@@ -3,6 +3,7 @@ package de.jansauer.printcoverage
 import org.gradle.internal.impldep.org.junit.Rule
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.UnexpectedBuildFailure
 import spock.lang.Specification
 
 import static org.gradle.testkit.runner.TaskOutcome.FAILED
@@ -27,10 +28,34 @@ class PrintCoveragePluginTest extends Specification {
         .toFile()
   }
 
+  def "should fail if the jacoco plugin is missing"() {
+    given:
+    buildFile << """
+        plugins {
+          id 'de.jansauer.printcoverage'
+        }
+    """
+
+    when:
+    GradleRunner.create()
+        .withGradleVersion(gradleVersion)
+        .withProjectDir(testProjectDir.root)
+        .withArguments('printCoverage')
+        .withPluginClasspath()
+        .build()
+
+    then:
+    thrown UnexpectedBuildFailure
+
+    where:
+    gradleVersion << ['4.5', '4.6', '4.7']
+  }
+
   def "should print the coverage for a example jacoco report"() {
     given:
     buildFile << """
         plugins {
+          id 'jacoco'
           id 'de.jansauer.printcoverage'
         }
     """
@@ -57,6 +82,7 @@ class PrintCoveragePluginTest extends Specification {
     buildFile << """
         plugins {
           id 'java'
+          id 'jacoco'
           id 'de.jansauer.printcoverage'
         }
         
@@ -101,6 +127,7 @@ class PrintCoveragePluginTest extends Specification {
     given:
     buildFile << """
         plugins {
+          id 'jacoco'
           id 'de.jansauer.printcoverage'
         }
     """
@@ -125,6 +152,7 @@ class PrintCoveragePluginTest extends Specification {
     expect:
     buildFile << """
         plugins {
+          id 'jacoco'
           id 'de.jansauer.printcoverage'
         }
         

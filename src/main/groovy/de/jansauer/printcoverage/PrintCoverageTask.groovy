@@ -11,20 +11,20 @@ class PrintCoverageTask extends DefaultTask {
   @Input
   final Property<String> coverageType = project.objects.property(String)
 
-//  PrintCoverageTask() {
-//    setDescription('Prints code coverage for gitlab.')
-//    setGroup('Coverage')
-//  }
+  PrintCoverageTask() {
+    setDescription('Prints code coverage for gitlab.')
+    setGroup('coverage')
+  }
 
   @TaskAction
   def printcoverage() {
     def slurper = new XmlSlurper()
-    slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-    slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
+    slurper.setFeature('http://apache.org/xml/features/nonvalidating/load-external-dtd', false)
 
     File jacocoTestReport = new File("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     if (!jacocoTestReport.exists()) {
-      logger.error("Jacoco test report is missing.")
+      logger.error('Jacoco test report is missing.')
       throw new GradleException('Jacoco test report is missing.')
     }
 

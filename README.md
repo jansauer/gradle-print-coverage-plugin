@@ -12,7 +12,8 @@ Add this snippet to yout build script.
 
 ```
 plugins {
-  id "de.jansauer.printcoverage" version "0.1.0"
+  id 'jacoco'
+  id 'de.jansauer.printcoverage' version '2.0.0'
 } 
 ```
 
