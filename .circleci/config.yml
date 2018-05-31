@@ -4,7 +4,7 @@ jobs:
 
   build:
     docker:
-    - image: circleci/openjdk:8-jdk
+    - image: circleci/openjdk:8-jdk@sha256:150bc8d302f93a4895554c54a70394d460398548537eabde8f641e908101f90b
     steps:
     - checkout
     - restore_cache:
@@ -24,7 +24,7 @@ jobs:
 
   deploy:
     docker:
-    - image: circleci/openjdk:8-jdk
+    - image: circleci/openjdk:8-jdk@sha256:150bc8d302f93a4895554c54a70394d460398548537eabde8f641e908101f90b
     steps:
     - checkout
     - restore_cache:
