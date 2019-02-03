@@ -44,6 +44,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .withDebug(true)
         .build()
 
     then:
@@ -69,6 +70,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .withDebug(true)
         .build()
 
     then:
@@ -115,6 +117,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('build', 'printCoverage')
         .withPluginClasspath()
+        .withDebug(true)
         .build()
 
     then:
@@ -141,6 +144,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .withDebug(true)
         .buildAndFail()
 
     then:
@@ -169,6 +173,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .withDebug(true)
         .build()
 
     result.output.contains("Coverage: ${coverage}")
