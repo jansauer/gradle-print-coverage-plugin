@@ -42,9 +42,8 @@ class PrintCoveragePluginTest extends Specification {
     GradleRunner.create()
         .withGradleVersion(gradleVersion)
         .withProjectDir(temporaryFolder.root)
-        .withArguments('printCoverage')
+        .withArguments('printCoverage', '--no-daemon')
         .withPluginClasspath()
-        .withDebug(true)
         .build()
 
     then:
@@ -68,9 +67,8 @@ class PrintCoveragePluginTest extends Specification {
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
         .withProjectDir(temporaryFolder.root)
-        .withArguments('printCoverage')
+        .withArguments('printCoverage', '--no-daemon')
         .withPluginClasspath()
-        .withDebug(true)
         .build()
 
     then:
@@ -115,9 +113,8 @@ class PrintCoveragePluginTest extends Specification {
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
         .withProjectDir(temporaryFolder.root)
-        .withArguments('build', 'printCoverage')
+        .withArguments('build', 'printCoverage', '--no-daemon')
         .withPluginClasspath()
-        .withDebug(true)
         .build()
 
     then:
@@ -142,9 +139,8 @@ class PrintCoveragePluginTest extends Specification {
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
         .withProjectDir(temporaryFolder.root)
-        .withArguments('printCoverage')
+        .withArguments('printCoverage', '--no-daemon')
         .withPluginClasspath()
-        .withDebug(true)
         .buildAndFail()
 
     then:
@@ -171,9 +167,8 @@ class PrintCoveragePluginTest extends Specification {
 
     def result = GradleRunner.create()
         .withProjectDir(temporaryFolder.root)
-        .withArguments('printCoverage')
+        .withArguments('printCoverage', '--no-daemon')
         .withPluginClasspath()
-        .withDebug(true)
         .build()
 
     result.output.contains("Coverage: ${coverage}")
