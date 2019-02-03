@@ -25,16 +25,16 @@ class PrintCoveragePluginTest extends Specification {
     temporaryFolder = new TemporaryFolder()
     temporaryFolder.create()
     propertiesFile = temporaryFolder.newFile('gradle.properties')
+    propertiesFile << """
+      org.gradle.daemon=false
+      org.gradle.jvmargs=-Xmx512m -Xms256m
+    """
     buildFile = temporaryFolder.newFile('build.gradle')
     reportFile = temporaryFolder
         .newFolder('build', 'reports', 'jacoco', 'test')
         .toPath()
         .resolve('jacocoTestReport.xml')
         .toFile()
-    propertiesFile << """
-      org.gradle.daemon=false
-      org.gradle.jvmargs=-Xmx512m -Xms256m
-    """
   }
 
   def "should fail if the jacoco plugin is missing"() {
@@ -51,6 +51,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .forwardOutput()
         .build()
 
     then:
@@ -76,6 +77,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .forwardOutput()
         .build()
 
     then:
@@ -122,6 +124,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('build', 'printCoverage')
         .withPluginClasspath()
+        .forwardOutput()
         .build()
 
     then:
@@ -148,6 +151,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .forwardOutput()
         .buildAndFail()
 
     then:
@@ -176,6 +180,7 @@ class PrintCoveragePluginTest extends Specification {
         .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
+        .forwardOutput()
         .build()
 
     result.output.contains("Coverage: ${coverage}")
