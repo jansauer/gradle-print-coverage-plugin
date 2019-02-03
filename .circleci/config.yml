@@ -4,6 +4,8 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:11-jdk
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout
       - restore_cache:
