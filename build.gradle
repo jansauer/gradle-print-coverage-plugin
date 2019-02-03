@@ -1,8 +1,9 @@
 plugins {
+  id 'com.palantir.git-version' version '0.11.0'
   id 'groovy'
   id 'java-gradle-plugin'
-  id 'com.palantir.git-version' version '0.12.0-rc1' // https://plugins.gradle.org/plugin/com.palantir.git-version
-  id 'com.gradle.plugin-publish' version '0.9.9' // https://plugins.gradle.org/plugin/com.gradle.plugin-publish
+  id 'jacoco'
+  id 'com.gradle.plugin-publish' version '0.10.1'
 }
 
 description = 'Gradle print coverage plugin'
@@ -17,7 +18,7 @@ repositories {
 }
 
 dependencies {
-  testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+  testCompile('org.spockframework:spock-core:1.2-groovy-2.5') {
     exclude(module: 'groovy-all')
   }
 }
