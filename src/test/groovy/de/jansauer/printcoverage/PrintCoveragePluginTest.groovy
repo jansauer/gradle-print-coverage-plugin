@@ -15,6 +15,8 @@ class PrintCoveragePluginTest extends Specification {
 
   TemporaryFolder temporaryFolder
 
+  File propertiesFile
+
   File buildFile
 
   File reportFile
@@ -22,12 +24,17 @@ class PrintCoveragePluginTest extends Specification {
   def setup() {
     temporaryFolder = new TemporaryFolder()
     temporaryFolder.create()
+    propertiesFile = temporaryFolder.newFile('gradle.properties')
     buildFile = temporaryFolder.newFile('build.gradle')
     reportFile = temporaryFolder
         .newFolder('build', 'reports', 'jacoco', 'test')
         .toPath()
         .resolve('jacocoTestReport.xml')
         .toFile()
+    propertiesFile << """
+      org.gradle.daemon=false
+      org.gradle.jvmargs=-Xmx512m -Xms256m
+    """
   }
 
   def "should fail if the jacoco plugin is missing"() {
