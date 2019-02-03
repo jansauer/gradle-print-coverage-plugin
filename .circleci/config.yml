@@ -23,10 +23,10 @@ jobs:
             - build
       - store_artifacts:
           path: build/libs
-          destination: ./
+          destination: libs
       - store_artifacts:
           path: build/reports
-          destination: ./
+          destination: reports
       - run:
           name: Save test results
           command: |
