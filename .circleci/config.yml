@@ -4,6 +4,8 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:11-jdk
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
     steps:
       - checkout
       - restore_cache:
@@ -21,7 +23,18 @@ jobs:
             - build
       - store_artifacts:
           path: build/libs
-          destination: ./
+          destination: libs
+      - store_artifacts:
+          path: build/reports
+          destination: reports
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/junit
       - run:
           name: Publish code coverage to codecov.io
           command: bash <(curl -s https://codecov.io/bash)

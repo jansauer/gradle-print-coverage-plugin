@@ -13,17 +13,24 @@ class PrintCoveragePluginTest extends Specification {
 
   final static String[] SUPPORTED_GRADLE_VERSIONS = ['4.10', '4.10.1', '4.10.2', '5.0', '4.10.3', '5.1', '5.1.1']
 
-  @Rule
-  final TemporaryFolder testProjectDir = new TemporaryFolder()
+  TemporaryFolder temporaryFolder
+
+  File propertiesFile
 
   File buildFile
 
   File reportFile
 
   def setup() {
-    testProjectDir.create()
-    buildFile = testProjectDir.newFile('build.gradle')
-    reportFile = testProjectDir
+    temporaryFolder = new TemporaryFolder()
+    temporaryFolder.create()
+    propertiesFile = temporaryFolder.newFile('gradle.properties')
+    propertiesFile << """
+      org.gradle.daemon=false
+      org.gradle.jvmargs=-Xmx512m -Xms256m
+    """
+    buildFile = temporaryFolder.newFile('build.gradle')
+    reportFile = temporaryFolder
         .newFolder('build', 'reports', 'jacoco', 'test')
         .toPath()
         .resolve('jacocoTestReport.xml')
@@ -41,7 +48,7 @@ class PrintCoveragePluginTest extends Specification {
     when:
     GradleRunner.create()
         .withGradleVersion(gradleVersion)
-        .withProjectDir(testProjectDir.root)
+        .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
         .build()
@@ -66,7 +73,7 @@ class PrintCoveragePluginTest extends Specification {
     when:
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
-        .withProjectDir(testProjectDir.root)
+        .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
         .build()
@@ -96,13 +103,13 @@ class PrintCoveragePluginTest extends Specification {
           testCompile 'junit:junit:4.12'
         }
     """
-    File classFile = testProjectDir
+    File classFile = temporaryFolder
         .newFolder('src', 'main', 'java', 'sample')
         .toPath()
         .resolve('Calculator.java')
         .toFile()
     classFile << new File("src/test/resources/Calculator.java").text
-    File junitFile = testProjectDir
+    File junitFile = temporaryFolder
         .newFolder('src', 'test', 'java', 'sample')
         .toPath()
         .resolve('CalculatorTest.java')
@@ -112,7 +119,7 @@ class PrintCoveragePluginTest extends Specification {
     when:
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
-        .withProjectDir(testProjectDir.root)
+        .withProjectDir(temporaryFolder.root)
         .withArguments('build', 'printCoverage')
         .withPluginClasspath()
         .build()
@@ -122,9 +129,66 @@ class PrintCoveragePluginTest extends Specification {
     result.task(":printCoverage").outcome == SUCCESS
 
     where:
-    // gradleVersion << SUPPORTED_GRADLE_VERSIONS TODO: Fix testing real code with gradle 4.x
-    gradleVersion << [/*'4.10', '4.10.1', '4.10.2',*/ '5.0', /*'4.10.3',*/ '5.1', '5.1.1']
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS.findAll { !(it =~ /4\.*/) }
   }
+
+  def "should print from a example class with tests with gradle 4.x"() {
+    given:
+    buildFile << """
+        plugins {
+          id 'java'
+          id 'jacoco'
+          id 'de.jansauer.printcoverage'
+        }
+        
+        repositories {
+          mavenCentral()
+        }
+        
+        dependencies {
+          testCompile 'junit:junit:4.12'
+        }
+        
+        // default version does not work with jdk11
+        // https://github.com/vaskoz/core-java9-impatient/issues/11
+        // https://github.com/jacoco/jacoco/releases/tag/v0.8.2
+        jacoco {
+          toolVersion = "0.8.2"
+        }
+    """
+    File classFile = temporaryFolder
+        .newFolder('src', 'main', 'java', 'sample')
+        .toPath()
+        .resolve('Calculator.java')
+        .toFile()
+    classFile << new File("src/test/resources/Calculator.java").text
+    File junitFile = temporaryFolder
+        .newFolder('src', 'test', 'java', 'sample')
+        .toPath()
+        .resolve('CalculatorTest.java')
+        .toFile()
+    junitFile << new File("src/test/resources/CalculatorTest.java").text
+
+    when:
+    def result = GradleRunner.create()
+        .withGradleVersion(gradleVersion)
+        .withProjectDir(temporaryFolder.root)
+        .withArguments('build', 'printCoverage')
+        .withPluginClasspath()
+        .build()
+
+    then:
+    result.output.contains('Coverage: 79.49%')
+    result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS.findAll { it =~ /4\.*/ }
+  }
+
+
+
+
+
 
   def "should fail if jacoco test report is missing"() {
     given:
@@ -138,7 +202,7 @@ class PrintCoveragePluginTest extends Specification {
     when:
     def result = GradleRunner.create()
         .withGradleVersion(gradleVersion)
-        .withProjectDir(testProjectDir.root)
+        .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
         .buildAndFail()
@@ -166,7 +230,7 @@ class PrintCoveragePluginTest extends Specification {
     reportFile << new File("src/test/resources/jacocoTestReport.xml").text
 
     def result = GradleRunner.create()
-        .withProjectDir(testProjectDir.root)
+        .withProjectDir(temporaryFolder.root)
         .withArguments('printCoverage')
         .withPluginClasspath()
         .build()
