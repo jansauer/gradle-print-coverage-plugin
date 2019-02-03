@@ -12,7 +12,7 @@ jobs:
           key: gradle-{{ checksum "build.gradle" }}
       - run:
           name: Run gradle build tasks
-          command: ./gradlew clean build codeCoverageReport --no-daemon
+          command: ./gradlew clean build codeCoverageReport
       - save_cache:
           paths:
             - ~/.gradle
