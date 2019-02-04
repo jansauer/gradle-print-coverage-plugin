@@ -79,3 +79,20 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
+
+
+
+https://blog.gradle.org/preview-avoiding-task-configuration-time
+https://guides.gradle.org/implementing-gradle-plugins/
+```
+project.getTasks().register("latestArtifactVersion", LatestArtifactVersion.class, new Action<LatestArtifactVersion>() {
+  public void execute(LatestArtifactVersion latestArtifactVersion) {
+    latestArtifactVersion.getServerUrl().set(extension.getServerUrl());
+  }
+});
+```
+
+https://docs.gradle.org/4.10/userguide/jacoco_plugin.html
+https://github.com/gradle/gradle/blob/master/subprojects/jacoco/src/main/java/org/gradle/testing/jacoco/plugins/JacocoPlugin.java#L249
+
+https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html

@@ -18,6 +18,9 @@ repositories {
 }
 
 dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.5.4'
+  compile 'org.apache.ant:ant:1.9.4'
+
   testCompile('org.spockframework:spock-core:1.2-groovy-2.5') {
     exclude(module: 'groovy-all')
   }
