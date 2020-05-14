@@ -15,9 +15,15 @@ class PrintCoveragePlugin implements Plugin<Project> {
     }
 
     def extension = target.extensions.create('printcoverage', PrintCoverageExtension, target)
+
     Task task = target.tasks.create('printCoverage', PrintCoverageTask) {
       coverageType = extension.coverageType
+      reportFile = extension.reportFile
+      message = extension.message
     }
+
+    target.ext.PrintCoverage = PrintCoverageTask
+
     task.dependsOn(target.tasks.withType(JacocoReport))
   }
 }

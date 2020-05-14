@@ -21,6 +21,8 @@ class PrintCoveragePluginTest extends Specification {
 
   File reportFile
 
+  File customReportFile
+
   def setup() {
     temporaryFolder = new TemporaryFolder()
     temporaryFolder.create()
@@ -30,10 +32,15 @@ class PrintCoveragePluginTest extends Specification {
       org.gradle.jvmargs=-Xmx512m -Xms256m
     """
     buildFile = temporaryFolder.newFile('build.gradle')
-    reportFile = temporaryFolder
-        .newFolder('build', 'reports', 'jacoco', 'test')
+    def buildDir = temporaryFolder
+            .newFolder('build', 'reports', 'jacoco', 'test')
+    reportFile = buildDir
         .toPath()
         .resolve('jacocoTestReport.xml')
+        .toFile()
+    customReportFile = buildDir
+        .toPath()
+        .resolve('customTestReport.xml')
         .toFile()
   }
 
@@ -246,4 +253,96 @@ class PrintCoveragePluginTest extends Specification {
     'METHOD'      |  '66.67%'
     'CLASS'       | '100.0%'
   }
+
+  def "should use configured message" () {
+    given:
+    buildFile << """
+        plugins {
+          id 'jacoco'
+          id 'de.jansauer.printcoverage'
+        }
+        
+        printcoverage {
+          message = 'Custom message: %s%%'
+        }
+    """
+    reportFile << new File("src/test/resources/jacocoTestReport.xml").text
+
+    when:
+    def result = GradleRunner.create()
+            .withGradleVersion(gradleVersion)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments('printCoverage')
+            .withPluginClasspath()
+            .build()
+
+    then:
+    result.output.contains('Custom message: 3.13%')
+    result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS
+  }
+
+  def "should use configured report-path" () {
+    given:
+    buildFile << """
+        plugins {
+          id 'jacoco'
+          id 'de.jansauer.printcoverage'
+        }
+        
+        printcoverage {
+          reportFile = "\$buildDir/reports/jacoco/test/customTestReport.xml".toString()
+        }
+    """
+    customReportFile << new File("src/test/resources/jacocoTestReport.xml").text
+
+    when:
+    def result = GradleRunner.create()
+            .withGradleVersion(gradleVersion)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments('printCoverage')
+            .withPluginClasspath()
+            .build()
+
+    then:
+    result.output.contains('Coverage: 3.13%')
+    result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS
+  }
+
+  def "should allow custom task definitions" () {
+    given:
+    buildFile << """
+        plugins {
+          id 'jacoco'
+          id 'de.jansauer.printcoverage'
+        }
+        
+        task printCustomCoverage(type: PrintCoverage) {
+          reportFile = "\$buildDir/reports/jacoco/test/customTestReport.xml".toString()
+          message = 'Custom coverage: %s%%'
+        }
+    """
+    customReportFile << new File("src/test/resources/jacocoTestReport.xml").text
+
+    when:
+    def result = GradleRunner.create()
+            .withGradleVersion(gradleVersion)
+            .withProjectDir(temporaryFolder.root)
+            .withArguments('printCustomCoverage')
+            .withPluginClasspath()
+            .build()
+
+    then:
+    result.output.contains('Custom coverage: 3.13%')
+    result.task(":printCustomCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS
+  }
+
 }

@@ -8,7 +8,7 @@ For more information see [Gitalb test coverage parsing](https://docs.gitlab.com/
 
 ## Getting Started
 
-Add this snippet to yout build script.
+Add this snippet to your build script.
 
 ```
 plugins {
@@ -33,16 +33,32 @@ build-gradle:
 
 ## Configuration
 
+Configuration for the default 'printCoverage' task:
 ```
 printcoverage {
   coverageType = 'INSTRUCTION'
+  reportFile = "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+  message = 'Coverage: %s%%'
 }
 ```
 
 * `coverageType`: Type of [coverage metric](http://www.eclemma.org/jacoco/trunk/doc/counters.html) to be printed.<br>
   One of 'INSTRUCTION', 'BRANCH', 'LINE', 'COMPLEXITY', 'METHOD' or 'CLASS'<br>
   Default: 'INSTRUCTION'
+* `reportFile`: Path to the Jacoco xml-report to be used   
+  Default: "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+* `message`: Format string to be used for printing the coverage information   
+  Default: 'Coverage: %s%%'
 
+To print coverage information for different reports, define custom tasks:
+```
+task printCombinedCoverage(type: PrintCoverage) {
+  reportFile = "$buildDir/reports/jacoco/combinedCoverageReport/combinedCoverageReport.xml"
+  message = 'Total Coverage: %s%%'
+}
+```
+ 
+  
 ## Publishing Workflow
 
 Every commit on this repository gets tested via [circleci](https://circleci.com/gh/jansauer/gradle-print-coverage-plugin).

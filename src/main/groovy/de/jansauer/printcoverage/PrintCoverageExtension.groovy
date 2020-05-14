@@ -6,9 +6,12 @@ import org.gradle.api.provider.Property
 class PrintCoverageExtension {
 
   final Property<String> coverageType
+  final Property<String> reportFile
+  final Property<String> message
 
   PrintCoverageExtension(Project project) {
     coverageType = project.objects.property(String)
-    coverageType.set('INSTRUCTION')
+    reportFile = project.objects.property(String)
+    message = project.objects.property(String)
   }
 }
