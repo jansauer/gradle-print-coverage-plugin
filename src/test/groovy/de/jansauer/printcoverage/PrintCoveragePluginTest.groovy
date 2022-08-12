@@ -1,6 +1,5 @@
 package de.jansauer.printcoverage
 
-import org.gradle.internal.impldep.org.junit.Rule
 import org.gradle.internal.impldep.org.junit.rules.TemporaryFolder
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.UnexpectedBuildFailure
@@ -11,7 +10,7 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class PrintCoveragePluginTest extends Specification {
 
-  final static String[] SUPPORTED_GRADLE_VERSIONS = ['4.10', '4.10.1', '4.10.2', '5.0', '4.10.3', '5.1', '5.1.1']
+  final static String[] SUPPORTED_GRADLE_VERSIONS = ['4.10', '4.10.1', '4.10.2', '5.0', '4.10.3', '5.1', '5.1.1', '5.6.4', '6.9.2', '7.5.1']
 
   TemporaryFolder temporaryFolder
 
@@ -100,7 +99,7 @@ class PrintCoveragePluginTest extends Specification {
         }
         
         dependencies {
-          testCompile 'junit:junit:4.12'
+          testImplementation 'junit:junit:4.12'
         }
     """
     File classFile = temporaryFolder
