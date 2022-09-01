@@ -6,10 +6,16 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
+import java.nio.file.Files
+import java.nio.file.Path
+import java.util.regex.Pattern
+
 class PrintCoverageTask extends DefaultTask {
 
   @Input
   final Property<String> coverageType = project.objects.property(String)
+
+  def testReportPattern = Pattern.compile("jacoco.*Report\\.xml", Pattern.CASE_INSENSITIVE)
 
   PrintCoverageTask() {
     setDescription('Prints code coverage for gitlab.')
@@ -22,16 +28,29 @@ class PrintCoverageTask extends DefaultTask {
     slurper.setFeature('http://apache.org/xml/features/disallow-doctype-decl', false)
     slurper.setFeature('http://apache.org/xml/features/nonvalidating/load-external-dtd', false)
 
-    File jacocoTestReport = new File("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-    if (!jacocoTestReport.exists()) {
+    Collection<Path> jacocoTestReports = Files.find(
+            Path.of(project.buildDir.path, "reports", "jacoco"),
+            2,
+            { path, att -> path.fileName.toString().matches(testReportPattern) })
+            .collect()
+
+    if (!jacocoTestReports.any()) {
       logger.error('Jacoco test report is missing.')
       throw new GradleException('Jacoco test report is missing.')
     }
 
-    def report = slurper.parse(jacocoTestReport)
-    double missed = report.counter.find { it.'@type' == coverageType.get() }.@missed.toDouble()
-    double covered = report.counter.find { it.'@type' == coverageType.get() }.@covered.toDouble()
-    def coverage = (100 / (missed + covered) * covered).round(2)
-    println 'Coverage: ' + coverage + '%'
+    double maxCoverage = 0
+
+    jacocoTestReports.each {Path jacocoTestReport ->
+      def report = slurper.parse(jacocoTestReport.toFile())
+      def coverageTag = report.counter.find { it.'@type' == coverageType.get() }
+      double missed = coverageTag.@missed.toDouble()
+      double covered = coverageTag.@covered.toDouble()
+      double coverage = (100 / (missed + covered) * covered).round(2)
+      // we cannot differ, if the coverage covers the same or different code, so we can only take the maximum value
+      maxCoverage = Math.max(maxCoverage, coverage)
+      println "Coverage ($jacocoTestReport.fileName): $coverage%"
+    }
+    println "Coverage: $maxCoverage%"
   }
 }
