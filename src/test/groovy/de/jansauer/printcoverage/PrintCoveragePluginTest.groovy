@@ -132,6 +132,65 @@ class PrintCoveragePluginTest extends Specification {
     gradleVersion << SUPPORTED_GRADLE_VERSIONS.findAll { !(it =~ /4\.*/) }
   }
 
+  def "should print from a example class with tests and integration tests"() {
+    given:
+    buildFile << """
+        plugins {
+          id 'java'
+          id 'jacoco'
+          id 'de.jansauer.printcoverage'
+          id 'org.unbroken-dome.test-sets' version '2.2.1'
+        }
+        
+        testSets {
+            integration
+        }
+        
+        repositories {
+          mavenCentral()
+        }
+        
+        dependencies {
+          testCompile 'junit:junit:4.12'
+        }
+    """
+    File classFile = temporaryFolder
+        .newFolder('src', 'main', 'java', 'sample')
+        .toPath()
+        .resolve('Calculator.java')
+        .toFile()
+    classFile << new File("src/test/resources/Calculator.java").text
+    File junitFile = temporaryFolder
+        .newFolder('src', 'test', 'java', 'sample')
+        .toPath()
+        .resolve('CalculatorTest.java')
+        .toFile()
+    junitFile << new File("src/test/resources/CalculatorTest.java").text
+    File integrationFile = temporaryFolder
+        .newFolder('src', 'integration', 'java', 'sample')
+        .toPath()
+        .resolve('CalculatorIT.java')
+        .toFile()
+    integrationFile << new File("src/test/resources/CalculatorIT.java").text
+
+    when:
+    def result = GradleRunner.create()
+        .withGradleVersion(gradleVersion)
+        .withProjectDir(temporaryFolder.root)
+        .withArguments('build', 'integration', 'printCoverage')
+        .withPluginClasspath()
+        .build()
+
+    then:
+    result.output.contains('Coverage (jacocoIntegrationReport.xml): 100.0%')
+    result.output.contains('Coverage (jacocoTestReport.xml): 79.49%')
+    result.output.contains('Coverage: 100.0%')
+    result.task(":printCoverage").outcome == SUCCESS
+
+    where:
+    gradleVersion << SUPPORTED_GRADLE_VERSIONS.findAll { !(it =~ /4\.*/) }
+  }
+
   def "should print from a example class with tests with gradle 4.x"() {
     given:
     buildFile << """
